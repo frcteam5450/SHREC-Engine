@@ -21,20 +21,21 @@ public class FlyWheelsOut extends Command {
     // Called just before this Command runs the first time
     protected void initialize() {
     	Robot.lighting.setState(LightingState.Shooting);
+    	Robot.shooter.setTargetSpeed(RobotMap.spd_shooter);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.shooter.updateShooterMotor(RobotMap.spd_shooter * Math.pow((1 - Robot.oi.jsk_right.getZ()), 2));
+    	Robot.shooter.updateShooterMotor();
     }
     
     protected void end() {
-    	Robot.shooter.updateShooterMotor(0);
+    	Robot.shooter.stopShooterMotor();
     	Robot.lighting.setState(LightingState.Off);
     }
     
     protected void interrupted() {
-    	Robot.shooter.updateShooterMotor(0);
+    	Robot.shooter.stopShooterMotor();
     	Robot.lighting.setState(LightingState.Off);
     }
 

@@ -2,6 +2,7 @@ package org.usfirst.frc.team5450.robot.commands;
 
 import org.usfirst.frc.team5450.robot.Robot;
 import org.usfirst.frc.team5450.robot.RobotMap;
+import org.usfirst.frc.team5450.robot.subsystems.Drivetrain;
 
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.command.Command;
@@ -34,17 +35,16 @@ public class UpdateDriveControls extends Command {
     	 * the update function.
     	 * 
     	 * This command got changed to accommodate 2 joySticks they are named
-    	 * jsk and jsk2 
-    	 * 
-    	 *                                                                        The z-axis got removed 
+    	 * jsk and jsk2
     	 * 
     	 */
-    	Robot.drivetrain.updateDriveMotors(-Robot.oi.jsk_left.getX() * Math.pow((1 - Robot.oi.jsk_left.getZ()), 2),
-    			Robot.oi.jsk_left.getY() * Math.pow((1 - Robot.oi.jsk_left.getZ()), 2),
-    			-Robot.oi.jsk_right.getX() * Math.pow((1 - Robot.oi.jsk_left.getZ()), 2),
-    			Robot.oi.jsk_right.getY() * Math.pow((1 - Robot.oi.jsk_left.getZ()), 2),
-    			RobotMap.thd_drivetrain_drift * Math.pow((1 - Robot.oi.jsk_left.getZ()), 2),
-    			RobotMap.thd_drivetrain_turn * Math.pow((1 - Robot.oi.jsk_left.getZ()), 2));
+    	double scalar = Robot.drivetrain.getGearing();
+    	Robot.drivetrain.updateDriveMotors(-Robot.oi.jsk_xbox.getRawAxis(0) * scalar,
+    			Robot.oi.jsk_xbox.getRawAxis(1) * scalar,
+    			-Robot.oi.jsk_xbox.getRawAxis(4) * scalar,
+    			Robot.oi.jsk_xbox.getRawAxis(5) * scalar,
+    			RobotMap.thd_drivetrain_drift * scalar,
+    			RobotMap.thd_drivetrain_turn * scalar);
     }
 
     /**

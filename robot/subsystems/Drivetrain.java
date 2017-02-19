@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 
 /**
  * I am working on changing the mechanum, and standard drive. I am taking out the z values and changing the Math.abs if statements.
+ * gyroscope calibration is currently disabled
  */
 public class Drivetrain extends Subsystem {
 	
@@ -62,6 +63,65 @@ public class Drivetrain extends Subsystem {
 			0);
 	
 	/**
+	 * This is a simulated driving speed for the driver to toggle between. 
+	 * This is necessary because an xbox controller is used to control
+	 * the robot, with no innate throttle axis
+	 */
+	public static enum DrivingSpeed {
+		FirstGear,
+		SecondGear
+	}
+	
+	private static DrivingSpeed spd_drivetrain_gearing = DrivingSpeed.FirstGear;
+	
+	/**
+	 * Increment the driving speed enum up or down
+	 */
+	public void incrementGearing() {
+		if (spd_drivetrain_gearing == DrivingSpeed.FirstGear) {
+			// the user is toggling between first and second gear
+			spd_drivetrain_gearing = DrivingSpeed.SecondGear;
+		} else if (spd_drivetrain_gearing == DrivingSpeed.SecondGear) {
+			// the speed is already at a maximum
+		}
+	}
+	
+	public void decrementGearing() {
+		if (spd_drivetrain_gearing == DrivingSpeed.FirstGear) {
+			// the speed is already at a minimum
+		} else if (spd_drivetrain_gearing == DrivingSpeed.SecondGear) {
+			// the user is toggling between second and first gear
+			spd_drivetrain_gearing = DrivingSpeed.FirstGear;
+		}
+	}
+	
+	public double getGearing() {
+		if (spd_drivetrain_gearing == DrivingSpeed.FirstGear) {
+			return RobotMap.spd_drivetrain_first_gear;
+		} else if (spd_drivetrain_gearing == DrivingSpeed.SecondGear) {
+			return RobotMap.spd_drivetrain_second_gear;
+		} else return 0.0;
+	}
+	
+	/**
+	 * This is the direction of the robot that is considered the front
+	 */
+	public static enum DrivingDirection {
+		Forward,
+		Backward
+	}
+	
+	private static DrivingDirection dir_drivetrain = DrivingDirection.Forward;
+	
+	public void toggleDirection() {
+		if (dir_drivetrain == DrivingDirection.Forward) {
+			dir_drivetrain = DrivingDirection.Backward;
+		} else if (dir_drivetrain == DrivingDirection.Backward) {
+			dir_drivetrain = DrivingDirection.Forward;
+		}
+	}
+	
+	/**
 	 *Sets the gyro to zero turning speed and zero angle
 	 */
 	public Drivetrain() {
@@ -73,7 +133,7 @@ public class Drivetrain extends Subsystem {
 	 * the goal of the PID controller
 	 */
 	public void calibrate() {
-		snr_gyro.calibrate();
+		//snr_gyro.calibrate();
 		snr_gyro.reset();
 	}
 	
@@ -123,11 +183,18 @@ public class Drivetrain extends Subsystem {
         				pwr_front_right = right_active ? Math.min(1, Math.max(-1, (y_right - x_right))) : 0.0,
         				pwr_rear_left = left_active ? Math.min(1, Math.max(-1, (y_left - x_left))) : 0.0,
         	    		pwr_rear_right = right_active ? Math.min(1, Math.max(-1, (y_right + x_right))) : 0.0;
-        		
-        		mtr_front_left.set(pwr_front_left); // flipped motor
-        		mtr_front_right.set(-pwr_front_right);
-        		mtr_rear_left.set(pwr_rear_left); // flipped motor
-        		mtr_rear_right.set(-pwr_rear_right);
+
+        	    if (dir_drivetrain == DrivingDirection.Forward) {
+	        		mtr_front_left.set(pwr_front_left); // flipped motor
+	        		mtr_front_right.set(-pwr_front_right);
+	        		mtr_rear_left.set(pwr_rear_left); // flipped motor
+	        		mtr_rear_right.set(-pwr_rear_right);
+        	    } else if (dir_drivetrain == DrivingDirection.Backward) {
+	        		mtr_front_left.set(-pwr_rear_right); // flipped motor
+	        		mtr_front_right.set(pwr_rear_left);
+	        		mtr_rear_left.set(-pwr_front_right); // flipped motor
+	        		mtr_rear_right.set(pwr_front_left);
+        	    }
         		
         		snr_gyro.reset();
     		} else {
@@ -145,10 +212,17 @@ public class Drivetrain extends Subsystem {
         				pwr_rear_left = left_active ? Math.min(1, Math.max(-1, ((checkSameSign(speed_rear_left, correction)) ? (speed_rear_left + correction) : speed_rear_left))) : (correction),
         	    		pwr_rear_right = right_active ? Math.min(1, Math.max(-1, ((checkSameSign(speed_rear_right, -correction)) ? (speed_rear_right - correction) : speed_rear_right))) : (-correction);
                 	    		
-        		mtr_front_left.set(pwr_front_left); // flipped motor
-        		mtr_front_right.set(-pwr_front_right);
-        		mtr_rear_left.set(pwr_rear_left); // flipped motor
-        		mtr_rear_right.set(-pwr_rear_right);
+	    		if (dir_drivetrain == DrivingDirection.Forward) {
+	        		mtr_front_left.set(pwr_front_left); // flipped motor
+	        		mtr_front_right.set(-pwr_front_right);
+	        		mtr_rear_left.set(pwr_rear_left); // flipped motor
+	        		mtr_rear_right.set(-pwr_rear_right);
+        	    } else if (dir_drivetrain == DrivingDirection.Backward) {
+	        		mtr_front_left.set(-pwr_rear_right); // flipped motor
+	        		mtr_front_right.set(pwr_rear_left);
+	        		mtr_rear_left.set(-pwr_front_right); // flipped motor
+	        		mtr_rear_right.set(pwr_front_left);
+        	    }
     		}
     	} else {
     		// Standard drive enabled
@@ -162,10 +236,17 @@ public class Drivetrain extends Subsystem {
     			double pwr_left = left_active ? Math.min(1, Math.max(-1, (y_left + correction))) : 0.0,
         				pwr_right = right_active ? Math.min(1, Math.max(-1, (y_right - correction))) : 0.0;
         		
-        		mtr_front_left.set(pwr_left); 
-        		mtr_front_right.set(-pwr_right);
-        		mtr_rear_left.set(pwr_left);
-        		mtr_rear_right.set(-pwr_right);
+        		if (dir_drivetrain == DrivingDirection.Forward) {
+	        		mtr_front_left.set(pwr_left); // flipped motor
+	        		mtr_front_right.set(-pwr_right);
+	        		mtr_rear_left.set(pwr_left); // flipped motor
+	        		mtr_rear_right.set(-pwr_right);
+        	    } else if (dir_drivetrain == DrivingDirection.Backward) {
+	        		mtr_front_left.set(-pwr_right); // flipped motor
+	        		mtr_front_right.set(pwr_left);
+	        		mtr_rear_left.set(-pwr_right); // flipped motor
+	        		mtr_rear_right.set(pwr_left);
+        	    }
         		
         		snr_gyro.reset(); // Updating the target of the PID controller
     		} else {
@@ -174,10 +255,17 @@ public class Drivetrain extends Subsystem {
     			double pwr_left = left_active ? Math.min(1, Math.max(-1, (y_left + correction))) :  (correction) ,
         				pwr_right = right_active ? Math.min(1, Math.max(-1, (y_right - correction))) : (-correction);
         		
-        		mtr_front_left.set(pwr_left);  //flipped motor
-        		mtr_front_right.set(-pwr_right);
-        		mtr_rear_left.set(pwr_left); // flipped motor
-        		mtr_rear_right.set(-pwr_right);
+				if (dir_drivetrain == DrivingDirection.Forward) {
+	        		mtr_front_left.set(pwr_left); // flipped motor
+	        		mtr_front_right.set(-pwr_right);
+	        		mtr_rear_left.set(pwr_left); // flipped motor
+	        		mtr_rear_right.set(-pwr_right);
+        	    } else if (dir_drivetrain == DrivingDirection.Backward) {
+	        		mtr_front_left.set(-pwr_right); // flipped motor
+	        		mtr_front_right.set(pwr_left);
+	        		mtr_rear_left.set(-pwr_right); // flipped motor
+	        		mtr_rear_right.set(pwr_left);
+        	    }
         		
     		}
     	}

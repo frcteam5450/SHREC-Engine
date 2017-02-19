@@ -20,20 +20,21 @@ public class FlyWheelsIn extends Command {
     
     protected void initialize() {
     	Robot.lighting.setState(LightingState.Shooting);
+    	Robot.shooter.setTargetSpeed(-RobotMap.spd_shooter);
     }
     
     protected void execute() {
-    	Robot.shooter.updateShooterMotor(-RobotMap.spd_shooter * Math.pow((1 - Robot.oi.jsk_right.getZ()), 2));
+    	Robot.shooter.updateShooterMotor();
     }
     
     protected void end() {
     	Robot.lighting.setState(LightingState.Off);
-    	Robot.shooter.updateShooterMotor(0);
+    	Robot.shooter.stopShooterMotor();
     }
     
     protected void interrupted() {
     	Robot.lighting.setState(LightingState.Off);
-    	Robot.shooter.updateShooterMotor(0);
+    	Robot.shooter.stopShooterMotor();
     }
 
     // Make this return true when this Command no longer needs to run execute()

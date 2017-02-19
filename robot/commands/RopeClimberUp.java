@@ -19,10 +19,10 @@ public class RopeClimberUp extends Command {
     // Called just before this Command runs the first time
     protected void initialize() {
     	Robot.lighting.setState(LightingState.Climbing);
-    	Robot.climber.updateClimbMotor(RobotMap.spd_climber);
     }
     
     protected void execute() {
+    	Robot.climber.updateClimbMotor(RobotMap.spd_climber);
     }
     
     protected void end() {

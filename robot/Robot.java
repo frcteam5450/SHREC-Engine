@@ -82,12 +82,25 @@ SOFTWARE.
  * 
  * Date: February 12, 2017
  * 
- * Name: LED Power!
+ * Name: LED Power
  * 
  * Description: This version contains code to run an LED NeoPixel strip, which
  * is attached to an arduino. The program contains a subsystem that tells the
  * arduino what the robot is doing. The arduino will respond to each state by
  * playing a sequence of patterns on the arduino.
+ * 
+ * 
+ * 
+ * Version: 0.1.4
+ * 
+ * Date: February 18, 2017
+ * 
+ * Name: UDP Computer Vision
+ * 
+ * Description: This version includes a vision subsystem that communicates with a
+ * raspberry pi based computer vision algorithm. This algorithm locates the boiler
+ * and gear hook using OpenCV, calculates an x, y, and z position and velocity,
+ * and transmits this information to the roborio through a UDP Datagram Socket.
  */
 
 
@@ -109,13 +122,16 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team5450.robot.commands.DriveStraight;
-import org.usfirst.frc.team5450.robot.commands.TestAuto;
+import org.usfirst.frc.team5450.robot.commands.DriveBack;
+import org.usfirst.frc.team5450.robot.commands.WatchPOV;
+import org.usfirst.frc.team5450.robot.commands.AutoRedOne;
 import org.usfirst.frc.team5450.robot.subsystems.Climber;
 import org.usfirst.frc.team5450.robot.subsystems.Drivetrain;
+import org.usfirst.frc.team5450.robot.subsystems.Electronics;
 import org.usfirst.frc.team5450.robot.subsystems.GearTray;
 import org.usfirst.frc.team5450.robot.subsystems.Lighting;
 import org.usfirst.frc.team5450.robot.subsystems.Shooter;
+import org.usfirst.frc.team5450.robot.subsystems.Vision;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -135,6 +151,8 @@ public class Robot extends IterativeRobot {
 	public static final GearTray geartray = new GearTray();
 	public static final Climber climber = new Climber();
 	public static final Lighting lighting = new Lighting();
+	public static final Electronics electronics = new Electronics();
+	public static final Vision vision = new Vision();
 	public static final OI oi = new OI();
 
 	/**
@@ -155,8 +173,8 @@ public class Robot extends IterativeRobot {
 		 * object. A selectable list will display on the SmartDashboard that
 		 * the driver can choose an autonomous program from.
 		 */
-		chooser.addObject("TestAuto", new TestAuto());
-		chooser.addDefault("Drive Straight", new DriveStraight(1.0));
+		chooser.addObject("TestAuto", new AutoRedOne());
+		chooser.addDefault("Drive Straight", new DriveBack(1.0));
 		/*chooser.addObject("My Auto", new MyAutoCommand());*/
 		SmartDashboard.putData("Auto mode", chooser);
 		
@@ -229,6 +247,9 @@ public class Robot extends IterativeRobot {
 		
 		// calibtrate the gyroscope to zero turning speed and set angle count to zero
 		drivetrain.calibrate();
+		
+		// wqtch the POV of the xbox controller
+		new WatchPOV().start();
 	}
 
 	/**

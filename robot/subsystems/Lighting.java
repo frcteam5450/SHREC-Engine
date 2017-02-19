@@ -1,8 +1,10 @@
 package org.usfirst.frc.team5450.robot.subsystems;
 
 import org.usfirst.frc.team5450.robot.RobotMap;
+import org.usfirst.frc.team5450.robot.commands.UpdateLighting;
 
 import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
@@ -14,6 +16,9 @@ public class Lighting extends Subsystem {
 			pin2 = new DigitalOutput(RobotMap.lighting_pin_2_port),
 			pin3 = new DigitalOutput(RobotMap.lighting_pin_3_port);
 	
+	private static final Relay boiler_light_relay = new Relay(RobotMap.boiler_light_relay_port);
+	private static final Relay gear_light_relay = new Relay(RobotMap.gear_light_relay_port);
+
 	public enum LightingState {
 		Mechanum,
 		Traction,
@@ -57,12 +62,28 @@ public class Lighting extends Subsystem {
 		}
 	}
 	
+	public void enableBoilerLight() {
+		boiler_light_relay.set(Relay.Value.kForward);
+	}
+	
+	public void enableGearLight() {
+		gear_light_relay.set(Relay.Value.kForward);
+	}
+	
+	public void disableBoilerLight() {
+		boiler_light_relay.set(Relay.Value.kOff);
+	}
+	
+	public void disableGearLight() {
+		gear_light_relay.set(Relay.Value.kOff);
+	}
+	
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        //setDefaultCommand(new MySpecialCommand());
+        setDefaultCommand(new UpdateLighting());
     }
 }
 
