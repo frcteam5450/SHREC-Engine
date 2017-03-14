@@ -8,15 +8,15 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class OpenGearTray extends Command {
-	public OpenGearTray() {
+public class CloseGearTray extends Command {
+	public CloseGearTray() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.geartray);
     }
 	
 	// Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.geartray.openGearTray();
+    	Robot.geartray.closeGearTray();
     }
     
 

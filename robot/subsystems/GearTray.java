@@ -25,6 +25,16 @@ public class GearTray extends Subsystem {
 	public void toggleGearTray() {
 		snd_gear_toggle.set(!snd_gear_toggle.get());
 	}
+	
+	//activate the gear mechanism at a push of a button
+	public void openGearTray() {
+		snd_gear_toggle.set(true);
+	}
+	
+	//activate the gear mechanism at a push of a button
+	public void closeGearTray() {
+		snd_gear_toggle.set(false);
+	}
 
     // Put methods for controlling this subsystem
     // here. Call these from Commands.

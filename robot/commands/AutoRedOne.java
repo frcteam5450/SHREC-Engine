@@ -13,9 +13,9 @@ public class AutoRedOne extends CommandGroup {
     	addSequential(new Turn(60));
     	addSequential(new DriveForward(1));
     	addSequential(new ToggleGearTray());
-    	addSequential(new DriveBack(2));
+    	addSequential(new DriveBackward(2));
     	addSequential(new Turn(-30));
-    	addSequential(new DriveBack(1));
+    	addSequential(new DriveBackward(1));
     	addSequential(new Turn(90));
     	addSequential(new DriveForward(3));
     	addSequential(new Turn(-90));

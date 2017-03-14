@@ -7,6 +7,12 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.usfirst.frc.team5450.robot.commands.ToggleDrivetrain;
 import org.usfirst.frc.team5450.robot.commands.ToggleDrivingDirection;
 import org.usfirst.frc.team5450.robot.commands.ToggleGearTray;
+import org.usfirst.frc.team5450.robot.commands.Turn;
+import org.usfirst.frc.team5450.robot.commands.VisionStateBoiler;
+import org.usfirst.frc.team5450.robot.commands.VisionStateGear;
+import org.usfirst.frc.team5450.robot.commands.AutoAimDeliverGear;
+import org.usfirst.frc.team5450.robot.commands.AutoAimGear;
+import org.usfirst.frc.team5450.robot.commands.DriveForward;
 import org.usfirst.frc.team5450.robot.commands.FlyWheelsIn;
 import org.usfirst.frc.team5450.robot.commands.FlyWheelsOut;
 import org.usfirst.frc.team5450.robot.commands.OpenGearTray;
@@ -36,14 +42,16 @@ public class OI {
 	public Button jsk_btn_climber_up = new JoystickButton(jsk_xbox, RobotMap.jsk_btn_climber_up_port);
 	public Button jsk_btn_climber_down = new JoystickButton(jsk_xbox, RobotMap.jsk_btn_climber_down_port);
 	public Button jsk_btn_toggle_directon = new JoystickButton(jsk_xbox, RobotMap.jsk_btn_toggle_direction_port);
+	public Button jsk_btn_toggle_vision_gear = new JoystickButton(jsk_xbox, RobotMap.jsk_btn_toggle_vision_gear_port);
+	public Button jsk_btn_toggle_vision_boiler = new JoystickButton(jsk_xbox, RobotMap.jsk_btn_toggle_vision_boiler_port);
 	
 	public OI() {
-		jsk_btn_toggle_mechanum.whenPressed(new ToggleDrivetrain());
-		jsk_btn_open_gear_tray.whileHeld(new OpenGearTray());
+		jsk_btn_toggle_mechanum.whileHeld(new RopeClimberDown());
+		jsk_btn_open_gear_tray.whileHeld(new RopeClimberUp());
 		jsk_btn_shooter_in.whileHeld(new FlyWheelsIn());
 		jsk_btn_shooter_out.whileHeld(new FlyWheelsOut());
-		jsk_btn_climber_up.whileHeld(new RopeClimberUp());
-		jsk_btn_climber_down.whileHeld(new RopeClimberDown());
 		jsk_btn_toggle_directon.whenPressed(new ToggleDrivingDirection());
+		jsk_btn_toggle_vision_gear.whenPressed(new AutoAimDeliverGear());
+		jsk_btn_toggle_vision_boiler.whileHeld(new VisionStateBoiler());
 	}
 }

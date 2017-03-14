@@ -101,6 +101,19 @@ SOFTWARE.
  * raspberry pi based computer vision algorithm. This algorithm locates the boiler
  * and gear hook using OpenCV, calculates an x, y, and z position and velocity,
  * and transmits this information to the roborio through a UDP Datagram Socket.
+ * 
+ * 
+ * 
+ * Version: 0.1.5
+ * 
+ * Date: March 10, 2017
+ * 
+ * Name: Tested Computer Vision
+ * 
+ * Description: This version of this robot project implements teleop and autonomous
+ * PID Controllers that aid the user in controlling a drive subsystem, along with a
+ * UDP Socket based communication interface with a Raspberry Pi. This socket is error
+ * friendly, and will restart communication if an error occurs.
  */
 
 
@@ -122,8 +135,11 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team5450.robot.commands.DriveBack;
-import org.usfirst.frc.team5450.robot.commands.WatchPOV;
+import org.usfirst.frc.team5450.robot.commands.DriveBackward;
+import org.usfirst.frc.team5450.robot.commands.WatchFuelPOV;
+import org.usfirst.frc.team5450.robot.commands.WatchGearPOV;
+import org.usfirst.frc.team5450.robot.commands.WatchLeftTrigger;
+import org.usfirst.frc.team5450.robot.commands.WatchRightTrigger;
 import org.usfirst.frc.team5450.robot.commands.AutoRedOne;
 import org.usfirst.frc.team5450.robot.subsystems.Climber;
 import org.usfirst.frc.team5450.robot.subsystems.Drivetrain;
@@ -173,8 +189,8 @@ public class Robot extends IterativeRobot {
 		 * object. A selectable list will display on the SmartDashboard that
 		 * the driver can choose an autonomous program from.
 		 */
-		chooser.addObject("TestAuto", new AutoRedOne());
-		chooser.addDefault("Drive Straight", new DriveBack(1.0));
+		//chooser.addObject("TestAuto", new AutoRedOne());
+		//chooser.addDefault("Drive Straight", new DriveBack(1.0));
 		/*chooser.addObject("My Auto", new MyAutoCommand());*/
 		SmartDashboard.putData("Auto mode", chooser);
 		
@@ -217,7 +233,7 @@ public class Robot extends IterativeRobot {
 			autonomousCommand.start();
 		
 		// calibtrate the gyroscope to zero turning speed and set angle count to zero
-		drivetrain.calibrate();
+		//drivetrain.calibrate();
 	}
 
 	/**
@@ -246,10 +262,13 @@ public class Robot extends IterativeRobot {
 			autonomousCommand.cancel();
 		
 		// calibtrate the gyroscope to zero turning speed and set angle count to zero
-		drivetrain.calibrate();
+		//drivetrain.calibrate();
 		
-		// wqtch the POV of the xbox controller
-		new WatchPOV().start();
+		// watch the POV of the xbox controller
+		new WatchGearPOV().start();
+		new WatchFuelPOV().start();
+		new WatchLeftTrigger().start();
+		new WatchRightTrigger().start();
 	}
 
 	/**

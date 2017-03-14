@@ -1,38 +1,43 @@
 package org.usfirst.frc.team5450.robot.commands;
 
 import org.usfirst.frc.team5450.robot.Robot;
-import org.usfirst.frc.team5450.robot.subsystems.UDPServer.VisionState;
+import org.usfirst.frc.team5450.robot.RobotMap;
+import org.usfirst.frc.team5450.robot.subsystems.Drivetrain;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  */
-public class UpdateLighting extends Command {
+public class WatchRightTrigger extends Command {
+	
+	private Timer t;
 
-    public UpdateLighting() {
+    public WatchRightTrigger() {
         // Use requires() here to declare subsystem dependencies
-        requires(Robot.lighting);
+    	t = new Timer();
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	t.start();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	if (Robot.vision.getVisionState() == VisionState.Boiler) {
-    		Robot.lighting.enableBoilerLight();
-    		Robot.lighting.disableGearLight();
-    	} else if (Robot.vision.getVisionState() == VisionState.Gear) {
-    		Robot.lighting.enableGearLight();
-    		Robot.lighting.disableBoilerLight();
-    	} else if (Robot.vision.getVisionState() == VisionState.Idle) {
-    		Robot.lighting.disableBoilerLight();
-    		Robot.lighting.disableGearLight();
-    	} else if (Robot.vision.getVisionState() == VisionState.Disabled) {
-    		Robot.lighting.disableBoilerLight();
-    		Robot.lighting.disableGearLight();
+    	double position = Robot.oi.jsk_xbox.getRawAxis(3);
+    	if (t.get() > RobotMap.jsk_xbox_pov_delay) {
+	    	if (position > 0.5) {
+	    		// This is the top position of the POV on the xbox controller
+	    		Robot.geartray.openGearTray();
+	        	t.reset();
+	    	} else if (position <= 0.5) {
+	    		// This is the bottom position of the POV on the xbox controller
+	    		Robot.geartray.closeGearTray();
+	        	t.reset();
+	    	}
     	}
     }
 

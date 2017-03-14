@@ -29,6 +29,7 @@ public class Electronics extends Subsystem {
 	
 	public void checkCurrent() {
 		compressor_relay.set((!pdp_pressure_switch.get()) ? Relay.Value.kForward : Relay.Value.kOff);
+		//compressor_relay.set(Relay.Value.kForward);
 	}
 
     public void initDefaultCommand() {
