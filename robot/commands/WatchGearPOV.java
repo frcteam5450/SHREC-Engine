@@ -2,54 +2,57 @@ package org.usfirst.frc.team5450.robot.commands;
 
 import org.usfirst.frc.team5450.robot.Robot;
 import org.usfirst.frc.team5450.robot.RobotMap;
-import org.usfirst.frc.team5450.robot.subsystems.Lighting.LightingState;
+import org.usfirst.frc.team5450.robot.subsystems.Drivetrain;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  */
-public class DriveForward extends Command {
+public class WatchGearPOV extends Command {
+	
 	private Timer t;
-	private double duration;
 
-    public DriveForward(double _duration) {
-        requires(Robot.drivetrain);
-        requires(Robot.lighting);
-        duration = _duration;
-        t = new Timer();
+    public WatchGearPOV() {
+        // Use requires() here to declare subsystem dependencies
+    	t = new Timer();
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
     	t.start();
-    	Robot.lighting.setState(LightingState.Traction);
-    	Robot.drivetrain.resetGyro();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivetrain.autoDriveUpdate(0, -RobotMap.spd_drivetrain_auto_straight, 0, -RobotMap.spd_drivetrain_auto_straight);
+    	int position = Robot.oi.jsk_xbox.getPOV();
+    	SmartDashboard.putNumber("Drive Speed", (Robot.drivetrain.getGearing()));
+    	if (t.get() > RobotMap.jsk_xbox_pov_delay_geartray) {
+	    	if (position == 0) {
+	    		// This is the top position of the POV on the xbox controller
+	    		Robot.drivetrain.incrementGearing();
+	        	t.reset();
+	    	} else if (position == 180) {
+	    		// This is the bottom position of the POV on the xbox controller
+	    		Robot.drivetrain.decrementGearing();
+	        	t.reset();
+	    	}
+    	}
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return (t.get() >= duration);
+        return false;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	t.stop();
-    	Robot.lighting.setState(LightingState.Off);
-    	Robot.drivetrain.autoDriveUpdate(0, 0, 0, 0);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
-    	t.stop();
-    	Robot.lighting.setState(LightingState.Off);
-    	Robot.drivetrain.autoDriveUpdate(0, 0, 0, 0);
     }
 }

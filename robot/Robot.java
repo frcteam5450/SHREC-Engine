@@ -101,6 +101,34 @@ SOFTWARE.
  * raspberry pi based computer vision algorithm. This algorithm locates the boiler
  * and gear hook using OpenCV, calculates an x, y, and z position and velocity,
  * and transmits this information to the roborio through a UDP Datagram Socket.
+ * 
+ * 
+ * 
+ * Version: 0.1.5
+ * 
+ * Date: March 10, 2017
+ * 
+ * Name: Tested Computer Vision
+ * 
+ * Description: This version of this robot project implements teleop and autonomous
+ * PID Controllers that aid the user in controlling a drive subsystem, along with a
+ * UDP Socket based communication interface with a Raspberry Pi. This socket is error
+ * friendly, and will restart communication if an error occurs.
+ * 
+ * 
+ * 
+ * Version: 0.2.0
+ * 
+ * Date: March 16, 2017
+ * 
+ * Name: Competition Ready
+ * 
+ * Description: This version of this robot project is tuned and ready to compete in the
+ * FIRST Robotics Competition. This code was tested at the Ellensburg, WA, at the Central
+ * Washington University District Event. This code implements computer vision to place a
+ * single gear during autonomous from multiple starting positions. An incidence angle is
+ * sent from an onboard raspberry pi via UDP.
+ * 
  */
 
 
@@ -122,9 +150,24 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team5450.robot.commands.DriveBack;
-import org.usfirst.frc.team5450.robot.commands.WatchPOV;
-import org.usfirst.frc.team5450.robot.commands.AutoRedOne;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousCrossLine;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousEmpty;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionLeft;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionLeftNoVision;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionLeftNoVisionHalf;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleLeft;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleNoVision;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleNoVisionLeft;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleNoVisionRight;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleRight;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionRight;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionRightNoVision;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionRightNoVisionHalf;
+import org.usfirst.frc.team5450.robot.commands.DriveBackward;
+import org.usfirst.frc.team5450.robot.commands.WatchFuelPOV;
+import org.usfirst.frc.team5450.robot.commands.WatchGearPOV;
+import org.usfirst.frc.team5450.robot.commands.WatchLeftTrigger;
+import org.usfirst.frc.team5450.robot.commands.WatchRightTrigger;
 import org.usfirst.frc.team5450.robot.subsystems.Climber;
 import org.usfirst.frc.team5450.robot.subsystems.Drivetrain;
 import org.usfirst.frc.team5450.robot.subsystems.Electronics;
@@ -173,9 +216,19 @@ public class Robot extends IterativeRobot {
 		 * object. A selectable list will display on the SmartDashboard that
 		 * the driver can choose an autonomous program from.
 		 */
-		chooser.addObject("TestAuto", new AutoRedOne());
-		chooser.addDefault("Drive Straight", new DriveBack(1.0));
-		/*chooser.addObject("My Auto", new MyAutoCommand());*/
+		chooser.addObject("Deliver Gear Left", new AutonomousPositionLeft());
+		chooser.addObject("Deliver Gear Right", new AutonomousPositionRight());
+		chooser.addObject("Deliver Gear Middle Left", new AutonomousPositionMiddleLeft());
+		chooser.addObject("Deliver Gear Middle Right", new AutonomousPositionMiddleRight());
+		chooser.addObject("Deliver Gear Middle No Vision", new AutonomousPositionMiddleNoVision());
+		chooser.addObject("Deliver Gear Middle No Vision Left", new AutonomousPositionMiddleNoVisionLeft());
+		chooser.addObject("Deliver Gear Middle No Vision Right", new AutonomousPositionMiddleNoVisionRight());
+		chooser.addObject("Position Robot Left No Vision", new AutonomousPositionLeftNoVisionHalf());
+		chooser.addObject("Position Robot Right No Vision", new AutonomousPositionRightNoVisionHalf());
+		chooser.addObject("Deliver Gear Left No Vision", new AutonomousPositionLeftNoVision());
+		chooser.addObject("Deliver Gear Right No Vision", new AutonomousPositionRightNoVision());
+		chooser.addObject("Cross Line", new AutonomousCrossLine());
+		chooser.addDefault("Empty Auto", new AutonomousEmpty());
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		// calibtrate the gyroscope to zero turning speed and set angle count to zero
@@ -217,7 +270,7 @@ public class Robot extends IterativeRobot {
 			autonomousCommand.start();
 		
 		// calibtrate the gyroscope to zero turning speed and set angle count to zero
-		drivetrain.calibrate();
+		//drivetrain.calibrate();
 	}
 
 	/**
@@ -246,10 +299,13 @@ public class Robot extends IterativeRobot {
 			autonomousCommand.cancel();
 		
 		// calibtrate the gyroscope to zero turning speed and set angle count to zero
-		drivetrain.calibrate();
+		//drivetrain.calibrate();
 		
-		// wqtch the POV of the xbox controller
-		new WatchPOV().start();
+		// watch the POV of the xbox controller
+		new WatchGearPOV().start();
+		new WatchFuelPOV().start();
+		new WatchLeftTrigger().start();
+		new WatchRightTrigger().start();
 	}
 
 	/**

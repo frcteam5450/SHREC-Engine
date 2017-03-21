@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class DriveForward extends Command {
+public class DriveBackward extends Command {
 	private Timer t;
 	private double duration;
 
-    public DriveForward(double _duration) {
+    public DriveBackward(double _duration) {
         requires(Robot.drivetrain);
         requires(Robot.lighting);
         duration = _duration;
@@ -30,7 +30,7 @@ public class DriveForward extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivetrain.autoDriveUpdate(0, -RobotMap.spd_drivetrain_auto_straight, 0, -RobotMap.spd_drivetrain_auto_straight);
+    	Robot.drivetrain.autoDriveUpdate(0, RobotMap.spd_drivetrain_auto_straight, 0, RobotMap.spd_drivetrain_auto_straight);
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -53,3 +53,4 @@ public class DriveForward extends Command {
     	Robot.drivetrain.autoDriveUpdate(0, 0, 0, 0);
     }
 }
+

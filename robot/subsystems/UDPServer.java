@@ -1,0 +1,165 @@
+package org.usfirst.frc.team5450.robot.subsystems;
+
+import java.io.*;
+import java.net.*;
+
+public class UDPServer implements Runnable {
+
+	/**
+	 * 0: Incidence Angle
+	 */
+	private double angle;
+
+	public enum VisionState {
+		Boiler,
+		Gear,
+		Idle,
+		Disabled
+	}
+	
+	private VisionState state = VisionState.Idle;
+	
+	private DatagramSocket serverSocket;
+	private byte[] sendData;
+	private byte[] receiveData;
+	
+	private void startSocket() {
+		// Start the UDP socket and open a connection to the server
+		try {
+			// Bind the socket to this port on roboRIO-5450-FRC.local 5800-5810
+			serverSocket = new DatagramSocket(5800);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		angle = 0.0;
+		
+		if (isConnected()) {
+			System.out.println("Successfully started UDP Server");
+			setVisionState(VisionState.Idle);
+		} else {
+			System.out.println("Failed to start UDP Server");
+			setVisionState(VisionState.Disabled);
+			
+			try {
+				Thread.sleep(1000);
+			} catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			UDPServer.this.startSocket();
+		}
+	}
+	
+	private void updateSocket() {
+		receiveData = new byte[1024];
+		sendData = new byte[1024];
+		
+		// Receive a packet of bytes from a client
+		String request = "";
+		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		
+		try {
+			serverSocket.setSoTimeout(500);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       
+		System.out.println("Awaiting Client");
+		try {
+			serverSocket.receive(receivePacket);                       //warnings    at 6:10pm sunday march 12th
+	        request = new String( receivePacket.getData());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+		
+		// Extract text from the byte packet
+        handleRequest(request);
+        
+        // Send a message back to the client
+        String response = "";
+        if (getVisionState() == VisionState.Boiler) {
+        	response = "3";
+        } else if (getVisionState() == VisionState.Gear) {
+        	response = "2";
+        } else if (getVisionState() == VisionState.Idle) {
+        	response = "1";
+        } else if (getVisionState() == VisionState.Disabled) {
+        	response = "0";
+        }
+        sendData = response.getBytes();
+        
+        
+        System.out.println("Response: " + response);
+        // Open a connection to an ip address
+        InetAddress IPAddress = receivePacket.getAddress();
+        int port = receivePacket.getPort();
+        
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+        
+        try {
+			serverSocket.send(sendPacket);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        try {
+			Thread.sleep(500);
+		} catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void closeSocket() {
+		serverSocket.close();
+	}
+	
+	private void handleRequest(String request) {
+		// Update internal state variables depending on the request
+		System.out.println("request: " + request);
+		int index = request.indexOf('!');
+		String buffer = request.substring(0, index);
+		double a = 0.0;
+		try {
+			a = Double.parseDouble(buffer);
+		} catch(NumberFormatException e){
+			e.printStackTrace();
+			a = getAngle();
+		}
+		setAngle(a);
+	}
+	
+	public synchronized void setVisionState(VisionState s) {
+		state = s;
+	}
+	
+	public synchronized VisionState getVisionState() {
+		return state;
+	}
+	
+	public synchronized void setAngle(double _a) {
+		angle = _a;
+	}
+	
+	public synchronized double getAngle() {
+		return angle;
+	}
+	
+	public boolean isConnected() {
+		return serverSocket != null;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		UDPServer.this.startSocket();
+		while (getVisionState() != VisionState.Disabled) {
+			UDPServer.this.updateSocket();                           //warnings    at 6:10pm sunday march 12th
+		}
+		UDPServer.this.closeSocket();
+	}
+}

@@ -17,6 +17,10 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
  * gyroscope calibration is currently disabled
  */
 public class Drivetrain extends Subsystem {
+	/**
+	 * The turning target angle for auto aiming
+	 */
+	public static double indicenceAngle = 0.0;
 	
 	/**
 	 * These commands reference the motors and ports from the robot map.
@@ -97,8 +101,10 @@ public class Drivetrain extends Subsystem {
 	
 	public double getGearing() {
 		if (spd_drivetrain_gearing == DrivingSpeed.FirstGear) {
+			SmartDashboard.putString("Drivetrain Gearing", "Low Gear");
 			return RobotMap.spd_drivetrain_first_gear;
 		} else if (spd_drivetrain_gearing == DrivingSpeed.SecondGear) {
+			SmartDashboard.putString("Drivetrain Gearing", "High Gear");
 			return RobotMap.spd_drivetrain_second_gear;
 		} else return 0.0;
 	}
@@ -116,8 +122,10 @@ public class Drivetrain extends Subsystem {
 	public void toggleDirection() {
 		if (dir_drivetrain == DrivingDirection.Forward) {
 			dir_drivetrain = DrivingDirection.Backward;
+			SmartDashboard.putString("Drivetrain Direction", "Backward");
 		} else if (dir_drivetrain == DrivingDirection.Backward) {
 			dir_drivetrain = DrivingDirection.Forward;
+			SmartDashboard.putString("Drivetrain Direction", "Forward");
 		}
 	}
 	
@@ -133,7 +141,7 @@ public class Drivetrain extends Subsystem {
 	 * the goal of the PID controller
 	 */
 	public void calibrate() {
-		//snr_gyro.calibrate();
+		snr_gyro.calibrate();
 		snr_gyro.reset();
 	}
 	
@@ -156,6 +164,11 @@ public class Drivetrain extends Subsystem {
     public void toggleMechanum() {
     	// Toggle the mechanum drive
     	snd_mechanum_toggle.set(!snd_mechanum_toggle.get());
+    	if (snd_mechanum_toggle.get()) {
+			SmartDashboard.putString("Drivetrain Type", "Mechanum");
+    	} else {
+			SmartDashboard.putString("Drivetrain Type", "Traction");
+    	}
     }
     
     /**
@@ -165,7 +178,7 @@ public class Drivetrain extends Subsystem {
 	 * ROBOT WILL TRY TO STRAFE, BUT THE PID WILL KEEP THE ROBOT IN ONE PLACE.
 	 */
     private boolean checkSameSign(double a, double b) {
-    	return !(Math.abs(a - b) > Math.abs(a) && Math.abs(a - b) > Math.abs(b));
+    	return !(Math.abs(a - b) > Math.abs(a) && Math.abs(a - b) > Math.abs(b)) /*true*/;
     }
     
     // Update the motors based on either mechanum or traction configuration
@@ -184,22 +197,16 @@ public class Drivetrain extends Subsystem {
         				pwr_rear_left = left_active ? Math.min(1, Math.max(-1, (y_left - x_left))) : 0.0,
         	    		pwr_rear_right = right_active ? Math.min(1, Math.max(-1, (y_right + x_right))) : 0.0;
 
-        	    if (dir_drivetrain == DrivingDirection.Forward) {
-	        		mtr_front_left.set(pwr_front_left); // flipped motor
-	        		mtr_front_right.set(-pwr_front_right);
-	        		mtr_rear_left.set(pwr_rear_left); // flipped motor
-	        		mtr_rear_right.set(-pwr_rear_right);
+	    		if (dir_drivetrain == DrivingDirection.Forward) {
+	        		setMotorPower(pwr_front_left, pwr_front_right, pwr_rear_left, pwr_rear_right);
         	    } else if (dir_drivetrain == DrivingDirection.Backward) {
-	        		mtr_front_left.set(-pwr_rear_right); // flipped motor
-	        		mtr_front_right.set(pwr_rear_left);
-	        		mtr_rear_left.set(-pwr_front_right); // flipped motor
-	        		mtr_rear_right.set(pwr_front_left);
+	        		setMotorPower(-pwr_rear_right, -pwr_rear_left, -pwr_front_right, -pwr_front_left);
         	    }
         		
         		snr_gyro.reset();
     		} else {
     			// The driver is attempting to strafe
-    			double correction = pid_drivetrain_strafe.update(getGyroAngle() , 1.0);
+    			double correction = (RobotMap.pid_drivetrain_teleop_strafe_enabled) ? pid_drivetrain_strafe.update(getGyroAngle() , 1.0) : 0;
     			double speed_front_left = (y_left + x_left),
                 		speed_front_right = (y_right - x_right),
                 	    speed_rear_left = (y_left - x_left),
@@ -213,67 +220,41 @@ public class Drivetrain extends Subsystem {
         	    		pwr_rear_right = right_active ? Math.min(1, Math.max(-1, ((checkSameSign(speed_rear_right, -correction)) ? (speed_rear_right - correction) : speed_rear_right))) : (-correction);
                 	    		
 	    		if (dir_drivetrain == DrivingDirection.Forward) {
-	        		mtr_front_left.set(pwr_front_left); // flipped motor
-	        		mtr_front_right.set(-pwr_front_right);
-	        		mtr_rear_left.set(pwr_rear_left); // flipped motor
-	        		mtr_rear_right.set(-pwr_rear_right);
+	        		setMotorPower(pwr_front_left, pwr_front_right, pwr_rear_left, pwr_rear_right);
         	    } else if (dir_drivetrain == DrivingDirection.Backward) {
-	        		mtr_front_left.set(-pwr_rear_right); // flipped motor
-	        		mtr_front_right.set(pwr_rear_left);
-	        		mtr_rear_left.set(-pwr_front_right); // flipped motor
-	        		mtr_rear_right.set(pwr_front_left);
+	        		setMotorPower(-pwr_rear_right, -pwr_rear_left, -pwr_front_right, -pwr_front_left);
         	    }
     		}
     	} else {
     		// Standard drive enabled
-    		/**
-    		 * 
-    		 */
     		if (Math.abs(y_left - y_right) > thd_drivetrain_turn) {
     			// The driver is attempting to turn
     			pid_drivetrain_turn.setTarget(RobotMap.spd_drivetrain_turn * (y_left - y_right));	// may need to invert value to switch turning direction
-    			double correction = pid_drivetrain_turn.update(getGyroRate(), 1.0);
+    			double correction = (RobotMap.pid_drivetrain_teleop_turn_enabled) ? pid_drivetrain_turn.update(getGyroRate(), 1.0) : 0;
     			double pwr_left = left_active ? Math.min(1, Math.max(-1, (y_left + correction))) : 0.0,
         				pwr_right = right_active ? Math.min(1, Math.max(-1, (y_right - correction))) : 0.0;
-        		
         		if (dir_drivetrain == DrivingDirection.Forward) {
-	        		mtr_front_left.set(pwr_left); // flipped motor
-	        		mtr_front_right.set(-pwr_right);
-	        		mtr_rear_left.set(pwr_left); // flipped motor
-	        		mtr_rear_right.set(-pwr_right);
+	        		setMotorPower(pwr_left, pwr_right, pwr_left, pwr_right);
         	    } else if (dir_drivetrain == DrivingDirection.Backward) {
-	        		mtr_front_left.set(-pwr_right); // flipped motor
-	        		mtr_front_right.set(pwr_left);
-	        		mtr_rear_left.set(-pwr_right); // flipped motor
-	        		mtr_rear_right.set(pwr_left);
+	        		setMotorPower(-pwr_right, -pwr_left, -pwr_right, -pwr_left);
         	    }
         		
         		snr_gyro.reset(); // Updating the target of the PID controller
     		} else {
     			// The driver is attempting to drive straight
-    			double correction = pid_drivetrain_straight.update(getGyroAngle(), 1.0);
+    				
+    			double correction = (RobotMap.pid_drivetrain_teleop_straight_enabled) ? pid_drivetrain_straight.update(getGyroAngle(), 1.0) : 0;
     			double pwr_left = left_active ? Math.min(1, Math.max(-1, (y_left + correction))) :  (correction) ,
         				pwr_right = right_active ? Math.min(1, Math.max(-1, (y_right - correction))) : (-correction);
         		
 				if (dir_drivetrain == DrivingDirection.Forward) {
-	        		mtr_front_left.set(pwr_left); // flipped motor
-	        		mtr_front_right.set(-pwr_right);
-	        		mtr_rear_left.set(pwr_left); // flipped motor
-	        		mtr_rear_right.set(-pwr_right);
+	        		setMotorPower(pwr_left, pwr_right, pwr_left, pwr_right);
         	    } else if (dir_drivetrain == DrivingDirection.Backward) {
-	        		mtr_front_left.set(-pwr_right); // flipped motor
-	        		mtr_front_right.set(pwr_left);
-	        		mtr_rear_left.set(-pwr_right); // flipped motor
-	        		mtr_rear_right.set(pwr_left);
+	        		setMotorPower(-pwr_right, -pwr_left, -pwr_right, -pwr_left);
         	    }
         		
     		}
     	}
-    	SmartDashboard.putNumber("Gyro Angle", getGyroAngle());
-		SmartDashboard.putNumber("Gyro Line Plot", getGyroAngle());
-		SmartDashboard.putNumber("Gyro Line Plot Large", getGyroAngle());
-		SmartDashboard.putNumber("Drivetrain Straight Error", pid_drivetrain_straight.getError());
-		SmartDashboard.putNumber("Drivetrain Strafe Error", pid_drivetrain_strafe.getError());
     }
 	
     /**
@@ -289,11 +270,26 @@ public class Drivetrain extends Subsystem {
 		double correction = pid_drivetrain_turn.update(getGyroRate(), 1.0);
 		double pwr_left = Math.min(1, Math.max(-1, (y_left + correction))),
 				pwr_right = Math.min(1, Math.max(-1, (y_right - correction)));
+		setMotorPower(pwr_left, pwr_right, pwr_left, pwr_right);
+    }
+    
+    public void autoDriveUpdate(double x_left, double y_left, double x_right, double y_right){
+    	double correction = (RobotMap.pid_drivetrain_auto_straight_enabled) ? pid_drivetrain_straight.update(getGyroAngle(), 1.0) : 0;
+		double pwr_left = Math.min(1, Math.max(-1, (y_left + correction))),
+				pwr_right = Math.min(1, Math.max(-1, (y_right - correction)));
 		
-		mtr_front_left.set(pwr_left); 
-		mtr_front_right.set(-pwr_right);
-		mtr_rear_left.set(pwr_left);
-		mtr_rear_right.set(-pwr_right);
+		if (dir_drivetrain == DrivingDirection.Forward) {
+    		setMotorPower(pwr_left, pwr_right, pwr_left, pwr_right);
+	    } else if (dir_drivetrain == DrivingDirection.Backward) {
+    		setMotorPower(-pwr_right, -pwr_left, -pwr_right, -pwr_left);
+	    }
+    }
+    
+    private void setMotorPower(double front_left, double front_right, double rear_left, double rear_right) {
+    	mtr_front_left.set(Math.abs(front_left) > RobotMap.thd_drivetrain_motor_deadzone ? front_left : 0.0); 
+		mtr_front_right.set(Math.abs(front_right) > RobotMap.thd_drivetrain_motor_deadzone ? -front_right : 0.0);
+		mtr_rear_left.set(Math.abs(rear_left) > RobotMap.thd_drivetrain_motor_deadzone ? rear_left : 0.0);
+		mtr_rear_right.set(Math.abs(rear_right) > RobotMap.thd_drivetrain_motor_deadzone ? -rear_right : 0.0);
     }
     
     // set the background command for the drivesubsystem

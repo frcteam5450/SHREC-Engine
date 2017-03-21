@@ -5,6 +5,7 @@ import org.usfirst.frc.team5450.robot.commands.UpdateLighting;
 
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
@@ -16,8 +17,8 @@ public class Lighting extends Subsystem {
 			pin2 = new DigitalOutput(RobotMap.lighting_pin_2_port),
 			pin3 = new DigitalOutput(RobotMap.lighting_pin_3_port);
 	
-	private static final Relay boiler_light_relay = new Relay(RobotMap.boiler_light_relay_port);
-	private static final Relay gear_light_relay = new Relay(RobotMap.gear_light_relay_port);
+	private static final Solenoid boiler_light_relay = new Solenoid(RobotMap.boiler_light_port);
+	private static final Solenoid gear_light_relay = new Solenoid(RobotMap.gear_light_port);
 
 	public enum LightingState {
 		Mechanum,
@@ -63,19 +64,19 @@ public class Lighting extends Subsystem {
 	}
 	
 	public void enableBoilerLight() {
-		boiler_light_relay.set(Relay.Value.kForward);
+		boiler_light_relay.set(true);
 	}
 	
 	public void enableGearLight() {
-		gear_light_relay.set(Relay.Value.kForward);
+		gear_light_relay.set(true);
 	}
 	
 	public void disableBoilerLight() {
-		boiler_light_relay.set(Relay.Value.kOff);
+		boiler_light_relay.set(false);
 	}
 	
 	public void disableGearLight() {
-		gear_light_relay.set(Relay.Value.kOff);
+		gear_light_relay.set(false);
 	}
 	
     // Put methods for controlling this subsystem
