@@ -6,7 +6,10 @@ import org.usfirst.frc.team5450.robot.commands.RetrieveGearAngle;
 import org.usfirst.frc.team5450.robot.commands.VisionTurn;
 import org.usfirst.frc.team5450.robot.commands.DriveBackward;
 import org.usfirst.frc.team5450.robot.commands.DriveForward;
+import org.usfirst.frc.team5450.robot.commands.FlyWheelsOff;
+import org.usfirst.frc.team5450.robot.commands.FlyWheelsOut;
 import org.usfirst.frc.team5450.robot.commands.OpenGearTray;
+import org.usfirst.frc.team5450.robot.commands.RetrieveBoilerAngle;
 import org.usfirst.frc.team5450.robot.commands.Turn;
 import org.usfirst.frc.team5450.robot.commands.Wait;
 
@@ -15,17 +18,15 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 /**
  *
  */
-public class DeliverGear extends CommandGroup {
+public class ShootFuel extends CommandGroup {
 
-    public DeliverGear() {
+    public ShootFuel() {
     	// Aim and turn
-    	addSequential(new DriveForward(RobotMap.tme_auto_drive / 2.0));
-    	addSequential(new CenterGear());
-    	addSequential(new DriveForward(RobotMap.tme_auto_drive / 2.0));
-    	
-    	// Wiggle back and forth
-    	//addSequential(new WiggleGear());
-    	addSequential(new ReleaseGear());
+    	addSequential(new CenterBoiler());
+    	addSequential(new CenterBoiler());
     	addSequential(new DriveBackward(RobotMap.tme_auto_drive / 2.0));
+    	addParallel(new FlyWheelsOut());
+    	addSequential(new Wait(8.0));
+    	addParallel(new FlyWheelsOff());
     }
 }

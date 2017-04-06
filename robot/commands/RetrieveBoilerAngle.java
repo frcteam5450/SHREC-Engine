@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj.command.Command;
  * This command uses the vision subsystem to automatically aim
  * and place a gear on a peg
  */
-public class RetrieveGearAngle extends Command {
+public class RetrieveBoilerAngle extends Command {
 	private Timer t;
 
-    public RetrieveGearAngle() {
+    public RetrieveBoilerAngle() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.drivetrain);
         t = new Timer();
@@ -22,8 +22,8 @@ public class RetrieveGearAngle extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.vision.setVisionState(VisionState.Gear);
-    	Robot.lighting.enableGearLight();
+    	Robot.vision.setVisionState(VisionState.Boiler);
+    	Robot.lighting.enableBoilerLight();
     	System.out.println("Gear Vision");
     	t.start();
     }

@@ -31,6 +31,7 @@ public class RobotMap {
 	 * These numbers correspond to the motor ports which make the robot move.
 	 */
 	public static final int mtr_climber_port = 5;
+	public static final int mtr_climber_port_two = 6;
 	public static final int mtr_shooter_port = 4;
 	public static final int mtr_front_left_port = 2;
 	public static final int mtr_front_right_port = 3;
@@ -51,8 +52,8 @@ public class RobotMap {
 	/**
 	 * PID tuning values for the encoded shooter motor
 	 */
-	public static final double pid_shooter_kp = 0.000065;
-	public static final double pid_shooter_ki = 0.000001; 
+	public static final double pid_shooter_kp = 0.0001;
+	public static final double pid_shooter_ki = 0.0000015;
 	public static final double pid_shooter_kd = 0; 
 	public static final double pid_shooter_kf = 0;
 	
@@ -97,11 +98,11 @@ public class RobotMap {
 	/**
 	 * PID tuning values for strafing straight during mechanum drive.
 	 */
-	public static final double pid_drivetrain_strafe_kp = 0.09;        // 0.04
-	public static final double pid_drivetrain_strafe_ki = 0;          // 0
-	public static final double pid_drivetrain_strafe_kd = 0;        // 0
+	public static final double pid_drivetrain_strafe_kp = 0.01;        // 0.04
+	public static final double pid_drivetrain_strafe_ki = 0.000;          // 0
+	public static final double pid_drivetrain_strafe_kd = 0.01;        // 0
 	public static final double pid_drivetrain_strafe_kf = 0;
-	public static final boolean pid_drivetrain_teleop_strafe_enabled = false;
+	public static final boolean pid_drivetrain_teleop_strafe_enabled = true;
 	
 	
 	/**
@@ -110,6 +111,8 @@ public class RobotMap {
 	 */
 	public static final double thd_drivetrain_drift = 0.25;
 	public static final double thd_drivetrain_motor_deadzone = 0.10;
+	public static final double thd_drivetrain_fudgefactor = 8.0 / 20.904;
+	public static final double thd_drivetrain_decceleration = 5.0 / 12.0 / 0.2;
 	public static final double thd_drivetrain_turn = 0.6;
 	public static final double thd_drivetrain_auto_turn = 2.0;
 	
@@ -127,7 +130,7 @@ public class RobotMap {
 	public static final double spd_drivetrain_auto_drive_back = 0.4;
 	public static final double spd_drivetrain_auto_turn = 0.6;
 	public static final double spd_climber = 1.0;
-	public static final double spd_shooter = 40000;	// degrees per second
+	public static final double spd_shooter = 30000;	// degrees per second
 	public static final double spd_drivetrain_first_gear = 0.65;
 	public static final double spd_drivetrain_second_gear = 1.0;
 	
@@ -151,13 +154,15 @@ public class RobotMap {
 	 */
 	public static final double thd_vision_aim_gear = 32.0;
 	public static final double thd_vision_aim_boiler = 12.0 * 8.0;
-	public static final double thd_vision_aim_time = 3.0;
+	public static final double thd_vision_aim_time = 2.5;
 	public static final double spd_vision_aim_gear = -0.20;
 	
 	/**
 	 * Autonomous Timing Values Seconds
 	 */
-	public static final double tme_auto_drive = 2.25;
-	public static final double ang_auto_turn = 58.0;
+	public static final double tme_auto_drive = 3.5;
+	public static final double tme_shooter_warmup = 0.2;
+	public static final double ang_auto_turn = 60.0;
+	public static final double ang_auto_boiler = 18.0;
 	public static final double ang_auto_wiggle = 6.0;
 }

@@ -25,6 +25,12 @@ public class Electronics extends Subsystem {
 		SmartDashboard.putNumber("Pressure Switch Value", !pdp_pressure_switch.get() ? 1 : 0);
 		SmartDashboard.putNumber("Port 15 Current", pdp.getCurrent(15));
 		SmartDashboard.putNumber("Port 12 Current", pdp.getCurrent(12));
+		
+
+		SmartDashboard.putNumber("Wheel 1 Current", pdp.getCurrent(0));
+		SmartDashboard.putNumber("Wheel 2 Current", pdp.getCurrent(1));
+		SmartDashboard.putNumber("Wheel 3 Current", pdp.getCurrent(2));
+		SmartDashboard.putNumber("Wheel 4 Current", pdp.getCurrent(3));
 	}
 	
 	public void checkCurrent() {

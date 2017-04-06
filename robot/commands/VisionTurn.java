@@ -23,7 +23,7 @@ public class VisionTurn extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	angle = -Robot.drivetrain.indicenceAngle;
+    	angle = -Robot.drivetrain.incidenceAngle;
     	Robot.drivetrain.resetGyro();
     	pid_auto_turn.reset();
     	pid_auto_turn.setTarget(-angle);

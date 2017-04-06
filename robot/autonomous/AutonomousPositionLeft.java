@@ -19,7 +19,7 @@ public class AutonomousPositionLeft extends CommandGroup {
 
     public AutonomousPositionLeft() {
     	addSequential(new CloseGearTray());
-    	addSequential(new DriveForward(RobotMap.tme_auto_drive / 2.0));
+    	addSequential(new DriveForward(RobotMap.tme_auto_drive / 3.5));
     	addSequential(new Wait(1.0));
     	addSequential(new Turn(RobotMap.ang_auto_turn));
     	addSequential(new Wait(0.5));

@@ -40,10 +40,10 @@ public class Shooter extends Subsystem {
 	 * Update the speed of the shooter motor on the robot to the speed parameter
 	 */
 	public void updateShooterMotor() {
-		/*double correction = pid_shooter.update(mtr_shooter.getSpeed(), 1.0);
+		double correction = pid_shooter.update(mtr_shooter.getSpeed(), 1.0);
 		SmartDashboard.putNumber("Shooter Encoder Rate", mtr_shooter.getSpeed());
-		SmartDashboard.putNumber("Shooter Encoder Error", pid_shooter.getError());*/
-		mtr_shooter.set(/*Math.min(1, Math.max(-1, (-correction)))*/-0.80);
+		SmartDashboard.putNumber("Shooter Encoder Error", pid_shooter.getError());
+		mtr_shooter.set(Math.min(1, Math.max(-1, (correction))));
 	}
 	
 	public void setTargetSpeed(double target) {

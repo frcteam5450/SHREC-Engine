@@ -5,12 +5,18 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
 import org.usfirst.frc.team5450.robot.commands.ToggleDrivingDirection;
+import org.usfirst.frc.team5450.robot.commands.VisionStateBoiler;
 import org.usfirst.frc.team5450.robot.commands.VisionStateGear;
+import org.usfirst.frc.team5450.robot.autonomous.CenterBoiler;
 import org.usfirst.frc.team5450.robot.autonomous.CenterGear;
 import org.usfirst.frc.team5450.robot.commands.FlyWheelsIn;
 import org.usfirst.frc.team5450.robot.commands.FlyWheelsOut;
 import org.usfirst.frc.team5450.robot.commands.RopeClimberUp;
+import org.usfirst.frc.team5450.robot.commands.SpeedShiftDown;
+import org.usfirst.frc.team5450.robot.commands.SpeedShiftUp;
+import org.usfirst.frc.team5450.robot.commands.SpeedShiftUpHold;
 import org.usfirst.frc.team5450.robot.commands.RopeClimberDown;
+import org.usfirst.frc.team5450.robot.commands.RopeClimberDownHalf;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -28,12 +34,12 @@ public class OI {
 	public Button jsk_btn_toggle_vision = new JoystickButton(jsk_xbox, RobotMap.jsk_btn_toggle_vision_port);
 	
 	public OI() {
-		jsk_btn_climber_up.whileHeld(new RopeClimberUp());
+		jsk_btn_climber_up.whileHeld(new RopeClimberDownHalf());
 		jsk_btn_climber_down.whileHeld(new RopeClimberDown());
-		jsk_btn_shooter_in.whileHeld(new FlyWheelsIn());
+		//jsk_btn_shooter_in.whileHeld(new FlyWheelsIn());
 		jsk_btn_shooter_out.whileHeld(new FlyWheelsOut());
 		jsk_btn_toggle_directon.whenPressed(new ToggleDrivingDirection());
-		jsk_btn_center_gear.whenPressed(new CenterGear());
-		jsk_btn_toggle_vision.whileHeld(new VisionStateGear());
+		jsk_btn_center_gear.whileHeld(new SpeedShiftUpHold());
+		//jsk_btn_toggle_vision.whileHeld(new SpeedShiftUp());
 	}
 }

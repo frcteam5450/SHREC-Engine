@@ -17,12 +17,15 @@ public class Climber extends Subsystem {
 	 * Each motor is being assigned to a port name.
 	 */
 	private static final CANTalon mtr_climber = new CANTalon(RobotMap.mtr_climber_port);    // Assigned the ropeClimber to a talon and a port name
+	private static final CANTalon mtr_climber_two = new CANTalon(RobotMap.mtr_climber_port_two);    // Assigned the ropeClimber to a talon and a port name
 
+	
 	/**
 	 * Update the speed of the climber motor on the robot
 	 */
 	public void updateClimbMotor(double speed) {
 		mtr_climber.set(speed);
+		mtr_climber_two.set(speed);
 	}
 	
     // Put methods for controlling this subsystem

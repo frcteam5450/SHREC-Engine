@@ -2,54 +2,55 @@ package org.usfirst.frc.team5450.robot.commands;
 
 import org.usfirst.frc.team5450.robot.Robot;
 import org.usfirst.frc.team5450.robot.RobotMap;
-import org.usfirst.frc.team5450.robot.subsystems.UDPServer.VisionState;
+import org.usfirst.frc.team5450.robot.subsystems.Lighting.LightingState;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- * This command uses the vision subsystem to automatically aim
- * and place a gear on a peg
+ *
  */
-public class RetrieveGearAngle extends Command {
+public class DriveBackwardSlow extends Command {
 	private Timer t;
+	private double duration;
 
-    public RetrieveGearAngle() {
-        // Use requires() here to declare subsystem dependencies
+    public DriveBackwardSlow(double _duration) {
         requires(Robot.drivetrain);
+        requires(Robot.lighting);
+        duration = _duration;
         t = new Timer();
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.vision.setVisionState(VisionState.Gear);
-    	Robot.lighting.enableGearLight();
-    	System.out.println("Gear Vision");
     	t.start();
+    	Robot.lighting.setState(LightingState.Traction);
+    	Robot.drivetrain.resetGyro();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivetrain.incidenceAngle = 0.0 * Robot.drivetrain.incidenceAngle + 1.0 * Robot.vision.getAngle();
+    	Robot.drivetrain.autoDriveUpdate(0, RobotMap.spd_drivetrain_auto_straight / 3.0, 0, RobotMap.spd_drivetrain_auto_straight / 3.0);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return (t.get() >= RobotMap.thd_vision_aim_time);
+        return (t.get() >= duration);
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.vision.setVisionState(VisionState.Idle);
-    	Robot.lighting.disableGearLight();
     	t.stop();
+    	Robot.lighting.setState(LightingState.Off);
+    	Robot.drivetrain.autoDriveUpdate(0, 0, 0, 0);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
-    	Robot.vision.setVisionState(VisionState.Idle);
-    	Robot.lighting.disableGearLight();
     	t.stop();
+    	Robot.lighting.setState(LightingState.Off);
+    	Robot.drivetrain.autoDriveUpdate(0, 0, 0, 0);
     }
 }
+

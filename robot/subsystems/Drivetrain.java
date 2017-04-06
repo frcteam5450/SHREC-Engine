@@ -12,15 +12,11 @@ import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 
-/**
- * I am working on changing the mechanum, and standard drive. I am taking out the z values and changing the Math.abs if statements.
- * gyroscope calibration is currently disabled
- */
 public class Drivetrain extends Subsystem {
 	/**
 	 * The turning target angle for auto aiming
 	 */
-	public static double indicenceAngle = 0.0;
+	public static double incidenceAngle = 0.0;
 	
 	/**
 	 * These commands reference the motors and ports from the robot map.
@@ -30,6 +26,10 @@ public class Drivetrain extends Subsystem {
 			mtr_front_right = new CANTalon(RobotMap.mtr_front_right_port),
 			mtr_rear_left = new CANTalon(RobotMap.mtr_rear_left_port),
 			mtr_rear_right = new CANTalon(RobotMap.mtr_rear_right_port);
+	
+	
+    private static double encoderSetpoint = 0.0;
+    
 	
 	/**
 	 * This command references the solenoid from the robot map.
@@ -77,6 +77,14 @@ public class Drivetrain extends Subsystem {
 	}
 	
 	private static DrivingSpeed spd_drivetrain_gearing = DrivingSpeed.FirstGear;
+	
+
+	public static enum DrivingType {
+		Traction,
+		Mechanum
+	}
+
+	private static DrivingType type_drivetrain = DrivingType.Traction;
 	
 	/**
 	 * Increment the driving speed enum up or down
@@ -163,10 +171,13 @@ public class Drivetrain extends Subsystem {
 	// Switch from mechanum drive to traction drive
     public void toggleMechanum() {
     	// Toggle the mechanum drive
-    	snd_mechanum_toggle.set(!snd_mechanum_toggle.get());
-    	if (snd_mechanum_toggle.get()) {
+    	if (type_drivetrain == DrivingType.Traction) {
+    		type_drivetrain = DrivingType.Mechanum;
+    		snd_mechanum_toggle.set(true);
 			SmartDashboard.putString("Drivetrain Type", "Mechanum");
-    	} else {
+    	} else if (type_drivetrain == DrivingType.Mechanum) {
+    		type_drivetrain = DrivingType.Traction;
+    		snd_mechanum_toggle.set(false);
 			SmartDashboard.putString("Drivetrain Type", "Traction");
     	}
     }
@@ -187,7 +198,7 @@ public class Drivetrain extends Subsystem {
     	boolean left_active = Math.sqrt(x_left * x_left + y_left * y_left) > thd_drivetrain_drift;
     	boolean right_active = Math.sqrt(x_right * x_right + y_right * y_right) > thd_drivetrain_drift;
     	
-    	if (snd_mechanum_toggle.get()) {
+    	if (type_drivetrain == DrivingType.Mechanum) {
     		// Mechanum drive enabled
     		// NOTE: Mechanum is in diamond configuration
     		if (Math.abs(y_left - y_right) > thd_drivetrain_turn) {
@@ -225,7 +236,7 @@ public class Drivetrain extends Subsystem {
 	        		setMotorPower(-pwr_rear_right, -pwr_rear_left, -pwr_front_right, -pwr_front_left);
         	    }
     		}
-    	} else {
+    	} else if (type_drivetrain == DrivingType.Traction) {
     		// Standard drive enabled
     		if (Math.abs(y_left - y_right) > thd_drivetrain_turn) {
     			// The driver is attempting to turn
@@ -286,6 +297,8 @@ public class Drivetrain extends Subsystem {
     }
     
     private void setMotorPower(double front_left, double front_right, double rear_left, double rear_right) {
+		SmartDashboard.putNumber("Drive Encoder Position", getEncoderDistance());
+    	
     	mtr_front_left.set(Math.abs(front_left) > RobotMap.thd_drivetrain_motor_deadzone ? front_left : 0.0); 
 		mtr_front_right.set(Math.abs(front_right) > RobotMap.thd_drivetrain_motor_deadzone ? -front_right : 0.0);
 		mtr_rear_left.set(Math.abs(rear_left) > RobotMap.thd_drivetrain_motor_deadzone ? rear_left : 0.0);
@@ -296,6 +309,22 @@ public class Drivetrain extends Subsystem {
     public void initDefaultCommand() {
     	setDefaultCommand(new UpdateDriveControls());
     }
+    
+    public double getEncoderDistance()  {
+    	return getScaledEncoder() - encoderSetpoint;
+    }
+    
+    private double getEncoderRaw()  {
+    	return mtr_front_right.getPosition();
+    }
+    
+    private double getScaledEncoder() {
+    	return getEncoderRaw() / 1440 * RobotMap.thd_drivetrain_fudgefactor;
+    }
 
+    
+    public void resetEncoderDistance() {
+    	encoderSetpoint = getScaledEncoder();
+    }
 }
 

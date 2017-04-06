@@ -20,10 +20,10 @@ public class AutonomousPositionMiddleNoVision extends CommandGroup {
 
     public AutonomousPositionMiddleNoVision() {
     	addSequential(new CloseGearTray());
-    	addSequential(new DriveForward(RobotMap.tme_auto_drive));
+    	addSequential(new DriveForward(RobotMap.tme_auto_drive / 1.0));
     	//addSequential(new WiggleGear());
     	addSequential(new ReleaseGear());
-    	addSequential(new DriveBackward(RobotMap.tme_auto_drive / 2.0));
+    	addSequential(new DriveBackward(RobotMap.tme_auto_drive / 4.0));
     	
     	//addSequential(new Turn(-90));
     	//addSequential(new DriveForward(RobotMap.tme_auto_drive));

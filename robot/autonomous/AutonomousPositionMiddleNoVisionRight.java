@@ -7,6 +7,7 @@ import org.usfirst.frc.team5450.robot.commands.VisionTurn;
 import org.usfirst.frc.team5450.robot.commands.CloseGearTray;
 import org.usfirst.frc.team5450.robot.commands.DriveBackward;
 import org.usfirst.frc.team5450.robot.commands.DriveForward;
+import org.usfirst.frc.team5450.robot.commands.DriveForwardSlow;
 import org.usfirst.frc.team5450.robot.commands.OpenGearTray;
 import org.usfirst.frc.team5450.robot.commands.Turn;
 import org.usfirst.frc.team5450.robot.commands.Wait;
@@ -20,15 +21,16 @@ public class AutonomousPositionMiddleNoVisionRight extends CommandGroup {
 
     public AutonomousPositionMiddleNoVisionRight() {
     	addSequential(new CloseGearTray());
-    	addSequential(new DriveForward(RobotMap.tme_auto_drive));
+    	addSequential(new DriveForward(RobotMap.tme_auto_drive / 3.0));
+    	addSequential(new DriveForwardSlow(RobotMap.tme_auto_drive / 1.5));
     	//addSequential(new WiggleGear());
     	addSequential(new ReleaseGear());
-    	addSequential(new DriveBackward(RobotMap.tme_auto_drive / 2.0));
+    	addSequential(new DriveBackward(RobotMap.tme_auto_drive / 4.0));
     	
     	addSequential(new Turn(90));
-    	addSequential(new DriveForward(RobotMap.tme_auto_drive));
+    	addSequential(new DriveForward(RobotMap.tme_auto_drive / 2.0));
     	addSequential(new Turn(-90));
-    	addSequential(new DriveForward(RobotMap.tme_auto_drive));
+    	addSequential(new DriveForward(RobotMap.tme_auto_drive / 2.0));
     	
     	addSequential(new CloseGearTray());
 
