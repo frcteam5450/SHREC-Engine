@@ -17,13 +17,13 @@ public class FlyWheelsOut extends Command {
     public FlyWheelsOut() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.shooter);
-        requires(Robot.lighting);
+        //requires(Robot.lighting);
         t = new Timer();
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.lighting.setState(LightingState.Shooting);
+    	//Robot.lighting.setState(LightingState.Shooting);
     	Robot.shooter.setTargetSpeed(RobotMap.spd_shooter);
     	t.start();
     }
@@ -42,13 +42,13 @@ public class FlyWheelsOut extends Command {
     
     protected void end() {
     	Robot.shooter.stopShooterMotor();
-    	Robot.lighting.setState(LightingState.Off);
+    	//Robot.lighting.setState(LightingState.Off);
     	Robot.shooter.disableRelay();
     }
     
     protected void interrupted() {
     	Robot.shooter.stopShooterMotor();
-    	Robot.lighting.setState(LightingState.Off);
+    	//Robot.lighting.setState(LightingState.Off);
     	Robot.shooter.disableRelay();
     }
 

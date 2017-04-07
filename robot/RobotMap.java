@@ -111,8 +111,10 @@ public class RobotMap {
 	 */
 	public static final double thd_drivetrain_drift = 0.25;
 	public static final double thd_drivetrain_motor_deadzone = 0.10;
-	public static final double thd_drivetrain_fudgefactor = 8.0 / 20.904;
-	public static final double thd_drivetrain_decceleration = 5.0 / 12.0 / 0.2;
+	public static final double thd_drivetrain_timeout = 3.5;
+	public static final double thd_drivetrain_decelleration_power = 2.2;
+	public static final double thd_drivetrain_fudgefactor = 8.0 / 20.904 * 1.049968 / 1.01591;
+	public static final double thd_drivetrain_decceleration = (4.0 / 12.0 / Math.pow(0.2, thd_drivetrain_decelleration_power));
 	public static final double thd_drivetrain_turn = 0.6;
 	public static final double thd_drivetrain_auto_turn = 2.0;
 	
@@ -130,7 +132,7 @@ public class RobotMap {
 	public static final double spd_drivetrain_auto_drive_back = 0.4;
 	public static final double spd_drivetrain_auto_turn = 0.6;
 	public static final double spd_climber = 1.0;
-	public static final double spd_shooter = 30000;	// degrees per second
+	public static final double spd_shooter = 40000;	// degrees per second
 	public static final double spd_drivetrain_first_gear = 0.65;
 	public static final double spd_drivetrain_second_gear = 1.0;
 	
@@ -165,4 +167,14 @@ public class RobotMap {
 	public static final double ang_auto_turn = 60.0;
 	public static final double ang_auto_boiler = 18.0;
 	public static final double ang_auto_wiggle = 6.0;
+	
+	private static final double dst_robot_length = 30.0 / 12.0;
+	private static final double dst_auto_airship = 114.0 / 12.0;
+	public static final double dst_auto_boiler = 64.0 / 12.0;
+	private static final double dst_auto_buffer_side = 7.0 / 12.0;
+	public static final double dst_auto_side = dst_auto_airship - dst_robot_length + dst_auto_buffer_side;
+	private static final double dst_auto_buffer_middle = 12.0 / 12.0;
+	public static final double dst_auto_middle = dst_auto_airship - dst_robot_length - dst_auto_buffer_middle;
+	public static final double dst_auto_placement = 24.0 / 12.0;
+	public static final double dst_auto_placement_side = 48.0 / 12.0;
 }

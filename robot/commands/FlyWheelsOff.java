@@ -17,13 +17,13 @@ public class FlyWheelsOff extends Command {
     public FlyWheelsOff() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.shooter);
-        requires(Robot.lighting);
+        //requires(Robot.lighting);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
     	Robot.shooter.stopShooterMotor();
-    	Robot.lighting.setState(LightingState.Off);
+    	//Robot.lighting.setState(LightingState.Off);
     	Robot.shooter.disableRelay();
     }
 

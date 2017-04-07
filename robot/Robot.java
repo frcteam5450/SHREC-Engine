@@ -141,6 +141,20 @@ SOFTWARE.
  * Northwest District Championship in Cheney Washington. This code implements position based
  * autonomous driving and turning that operates within a one percent error margin.
  * 
+ * 
+ * 
+ * Version: 0.3.1
+ * 
+ * Date: April 6, 2017
+ * 
+ * Name: Regional Competition Day Two
+ * 
+ * Description: This version of this project has been fined tuned for side gear delivery at
+ * the for the Regional Pacific Northwest Competition match field. This version of this
+ * project has been submitted to the Autodesk CAD and Code contest. The distance based driving
+ * subroutine operates within a one percent error margin at any given speed, by calculating a
+ * travel distance, an deceleration ramp.
+ * 
  */
 
 
@@ -168,14 +182,17 @@ import org.usfirst.frc.team5450.robot.autonomous.AutonomousCrossLine;
 import org.usfirst.frc.team5450.robot.autonomous.AutonomousEmpty;
 import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionLeft;
 import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionLeftNoVision;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionLeftNoVisionBoiler;
 import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleLeft;
 import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleNoVision;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleNoVisionDistance;
 import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleNoVisionLeft;
 import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleNoVisionRight;
 import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleNoVisionSlow;
 import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionMiddleRight;
 import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionRight;
 import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionRightNoVision;
+import org.usfirst.frc.team5450.robot.autonomous.AutonomousPositionRightNoVisionBoiler;
 import org.usfirst.frc.team5450.robot.commands.DriveBackward;
 import org.usfirst.frc.team5450.robot.commands.WatchLeftTrigger;
 import org.usfirst.frc.team5450.robot.commands.WatchRightTrigger;
@@ -230,25 +247,30 @@ public class Robot extends IterativeRobot {
 		//chooser.addObject("Deliver Gear Left", new AutonomousPositionLeft());
 		//chooser.addObject("Deliver Gear Right", new AutonomousPositionRight());
 		
-		chooser.addObject("Deliver Gear Left No Vision", new AutonomousPositionLeftNoVision());
-		chooser.addObject("Deliver Gear Right No Vision", new AutonomousPositionRightNoVision());
+		//chooser.addObject("Deliver Gear Left No Vision", new AutonomousPositionLeftNoVision());
+		//chooser.addObject("Deliver Gear Right No Vision", new AutonomousPositionRightNoVision());
 		
 		//chooser.addObject("Deliver Gear Middle Left", new AutonomousPositionMiddleLeft());
 		//chooser.addObject("Deliver Gear Middle Right", new AutonomousPositionMiddleRight());
 		
 		chooser.addObject("Deliver Gear Middle No Vision", new AutonomousPositionMiddleNoVision());
-		chooser.addObject("Deliver Gear Middle No Vision Slow", new AutonomousPositionMiddleNoVisionSlow());
+		//chooser.addObject("Deliver Gear Middle No Vision Slow", new AutonomousPositionMiddleNoVisionSlow());
+		chooser.addObject("Deliver Gear Middle No Vision Distance", new AutonomousPositionMiddleNoVisionDistance());
+		
 		chooser.addObject("Deliver Gear Middle No Vision Left", new AutonomousPositionMiddleNoVisionLeft());
 		chooser.addObject("Deliver Gear Middle No Vision Right", new AutonomousPositionMiddleNoVisionRight());
 		
 		chooser.addObject("Shoot Fuel Left No Vision", new AutonomousBoilerLeft());
 		chooser.addObject("Shoot Fuel Right No Vision", new AutonomousBoilerRight());
 		
-		//chooser.addObject("Deliver Gear Right Boiler", new AutonomousPositionRightBoiler());
-		//chooser.addObject("Deliver Gear Left Boiler", new AutonomousPositionLeftBoiler());
+		chooser.addObject("Deliver Gear Right Boiler", new AutonomousPositionRightNoVisionBoiler());
+		chooser.addObject("Deliver Gear Left Boiler", new AutonomousPositionLeftNoVisionBoiler());
 		
-		chooser.addObject("Cross Line", new AutonomousCrossLine());
-		chooser.addDefault("Empty Auto", new AutonomousEmpty());
+		chooser.addObject("Deliver Gear Right", new AutonomousPositionRightNoVision());
+		chooser.addObject("Deliver Gear Left", new AutonomousPositionLeftNoVision());
+		
+		chooser.addDefault("Cross Line", new AutonomousCrossLine());
+		
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		// calibtrate the gyroscope to zero turning speed and set angle count to zero

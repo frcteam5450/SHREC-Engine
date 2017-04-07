@@ -17,6 +17,6 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 public class AutonomousCrossLine extends CommandGroup {
 
     public AutonomousCrossLine() {
-    	addSequential(new DriveForwardDistance(8.0, 0.2));
+    	addSequential(new DriveForward(RobotMap.tme_auto_drive));
     }
 }

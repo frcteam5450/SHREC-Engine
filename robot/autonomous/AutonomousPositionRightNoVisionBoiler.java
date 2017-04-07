@@ -21,13 +21,13 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 /**
  *
  */
-public class AutonomousPositionLeftNoVision extends CommandGroup {
+public class AutonomousPositionRightNoVisionBoiler extends CommandGroup {
 
-    public AutonomousPositionLeftNoVision() {
+    public AutonomousPositionRightNoVisionBoiler() {
     	addSequential(new CloseGearTray());
     	addSequential(new DriveForwardDistance(RobotMap.dst_auto_side, 0.4));
     	addSequential(new Wait(1.0));
-    	addSequential(new Turn(RobotMap.ang_auto_turn));
+    	addSequential(new Turn(-RobotMap.ang_auto_turn));
     	addSequential(new Wait(0.5));
     	addSequential(new DriveForwardDistance(RobotMap.dst_auto_placement_side, 0.2));
     	addSequential(new Wait(0.5));
@@ -35,5 +35,11 @@ public class AutonomousPositionLeftNoVision extends CommandGroup {
     	addSequential(new DriveBackwardDistance(RobotMap.dst_auto_placement_side, 0.4));
     	addSequential(new Wait(1.0));
     	addSequential(new CloseGearTray());
+    	addSequential(new Turn(20));
+    	addSequential(new Wait(0.5));
+    	addParallel(new FlyWheelsOut());
+    	addSequential(new DriveBackwardDistance(RobotMap.dst_auto_boiler, 0.4));
+    	addSequential(new Wait(8.0));
+    	addSequential(new FlyWheelsOff());
     }
 }

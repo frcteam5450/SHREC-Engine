@@ -39,9 +39,9 @@ public class UpdateDriveControls extends Command {
     	 * 
     	 */
     	double scalar = Robot.drivetrain.getGearing();
-    	Robot.drivetrain.updateDriveMotors(Robot.oi.jsk_xbox.getRawAxis(0) * scalar,
+    	Robot.drivetrain.updateDriveMotors(-Robot.oi.jsk_xbox.getRawAxis(0) * scalar,
     			Robot.oi.jsk_xbox.getRawAxis(1) * scalar,
-    			Robot.oi.jsk_xbox.getRawAxis(4) * scalar,
+    			-Robot.oi.jsk_xbox.getRawAxis(4) * scalar,
     			Robot.oi.jsk_xbox.getRawAxis(5) * scalar,
     			RobotMap.thd_drivetrain_drift * scalar,
     			RobotMap.thd_drivetrain_turn * scalar);
